@@ -16,4 +16,5 @@
 *.blg
 *.out
 *.lot
+*.lof
 *.synctex.gz
