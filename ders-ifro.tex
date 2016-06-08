@@ -146,7 +146,7 @@ A tabela \ref{tab:rf} mostra um modelo de tabela montada para cada RF elicitado.
 
 \chapter{Diagramas}
 
-O uso de diagramas é essencial para a compreensão profunda tanto do problema quanto da solução sendo desenvolvida. Em informática é comum recorrer ao Diagrama Entidade-Relacionamento (DER) e/ou à Linguagem de Modelagem Unificada (UML) durante o projeto de sistemas. Para elaboração deste documento de especificação, ambas as técnicas podem ser invocadas, sendo que a utilização de DER torna obrigatória a aplicação de um dicionário de dados, enquanto que ao usar UML requeremos ao menos um diagrama de Caso de Uso e sua descrição formal. 
+O uso de diagramas é essencial para a compreensão profunda tanto do problema quanto da solução sendo desenvolvida. Em informática é comum recorrer ao Diagrama Entidade-Relacionamento (DER) e/ou à Linguagem de Modelagem Unificada (UML) durante o projeto de sistemas. Para elaboração deste documento de especificação, ambas as técnicas podem ser invocadas, sendo que a utilização de DER torna obrigatória a aplicação de um dicionário de dados, enquanto que ao usar UML requeremos ao menos um diagrama de Caso de Uso e sua descrição formal. A versão da especificação utilizada para diagramação deste projeto deve ser UML 2.3\footnote{Os documentos que especificam a UML 2.3 podem ser encontrados em \url{http://www.omg.org/spec/UML/2.3/}.}.
 
 A seleção de quaisquer outros digramas é opcional e válida na composição deste documento, desde que devidamente descritos e que sejam relevantes ao projeto entregando novas perspectivas que, sem estes, seria mais complexo ou mesmo impossível de se perceber.
 
@@ -154,13 +154,12 @@ A seleção de quaisquer outros digramas é opcional e válida na composição d
 
 O digrama de caso de uso deve contemplar as funções globais do sistema fazendo alusão aos requisitos funcionais levantados no capítulo anterior. Cada RF deve gerar ao menos um caso de uso (UC) os quais devem estar dispostos e disponíveis aos atores exatamente como demandado pelos RNF. Processos fora dos limites do sistema (system boundary) também podem ser modelados se o projetista julgar necessário. Um exemplo pode ser visualizado na figura \ref{fig:uc}.
 
-\begin{figure}
+\begin{figure}[!h]
 	\centering
 	\includegraphics[width=.6\linewidth]{uc}
 	\caption{Exemplo de diagrama de caso de uso}
 	\label{fig:uc}
 \end{figure}
-
 
 Assim como nos requisitos, UC também possuem um número de identificação sequencial e único utilizado em sua descrição formal e referenciamento no documento, porém não aparecem nos digramas. As regras de nomenclatura seguem as mesmas que de RF. O início da descrição de cada UC deve ser efetuado em uma nova página.
 
@@ -225,12 +224,14 @@ Defina um passo-a-passo das principais ações que o usuário deve tomar dentro 
 \textbf{Fluxo alternativo:} & 
 Defina caminhos alternativos que o usuário pode iniciar por vontade própria dentro do UC (sempre iniciar pelo ator).
 \vspace{\onelineskip}
+
 \label{UC1:FA:A1} A1 - muda de ideia
 \begin{enumerate}[label=\alph*)]
 	\item Ator muda de ideia;
 	\item Sistema responde;
 	\item Retorna ao passo \ref{UC1:FP:c} do fluxo principal.
 \end{enumerate} 
+
 \label{UC1:FA:A2} A2 - cancela operação
 \begin{enumerate}[label=\alph*)]
 	\item Ator cancela operação;
@@ -253,13 +254,105 @@ Defina cenários em que o sistema pode disparar erros causados pelo usuário ou 
 \end{longtable} 
 
 \clearpage
+\section{Pacotes}
+
+Diagramas de pacotes são opcionais neste modelo de documento. Devem demonstrar dependências e usos entre módulos do sistema permitindo uma visão geral dos fluxos de comunicação internos e externos. Portanto haverá nesta seção a descrição da arquitetura do sistema e seus principais meios de acesso e troca de mensagens.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=.7\linewidth]{pck}
+	\caption{Exemplo de diagrama de pacotes}
+	\label{fig:pck}
+\end{figure}
+
+Após a exposição do diagrama, um texto descritivo contendo informações sobre o mesmo deve ser redigido. Todo texto a seguir nesta seção é um \textbf{exemplo de redação para diagrama de pacotes}.
+
+O diagrama da figura \ref{fig:pck} demonstra a arquitetura desejada para o sistema dividido logicamente em back-end, front-end e middleware. 
+
+\emph{Back-end} representa o conjunto de camadas de software responsável pela aplicação das regras de negócio, segurança, autenticação e persistência, o qual será composto pelas camadas \emph{Controlador}, \emph{Modelo} e \emph{Acesso ao Banco}. A classe de controle \emph{Roteador} fará recepção de requisições provindas do middleware e então identificará e redirecionará para classes de controles internas responsáveis por gerenciar o contexto das solicitações, além de montar respostas contendo o resultado do processamento obtido no formato esperado pelo front-end. As classes de controle acessarão classes da camada de modelo que por sua vez possuem características persistíveis e comportamentos que apoiam na recuperação de objetos de outros modelos relacionados, por isso sua ligação forte com a camada de acesso ao banco de dados. 
+
+\emph{Middleware} compreende a camada que faz intermediações entre a visualização do sistema e suas regras. Através da \emph{API} ficarão disponíveis as operações do sistema permitindo que diferentes sistemas possam utiliza-las, inclusive a própria camada de visualização. Para a produção da API deve ser utilizado o padrão RESTful.
+
+\emph{Front-end} é a parte que fará interface com o usuário permitindo-lhe interagir com o sistema e vice-versa. Este sistema contará com uma camada de \emph{Visualização} implementando as operações disponíveis na API e cumprindo os requisitos de software especificados neste projeto. Apesar de a implementação desta camada estar aqui planejada, por haver API, qualquer aplicação terceira será compreendida como uma camada de visualização.
+
 \section{Classes}
 
-\subsection{Nome da Classe}
+Classes, por definição, são abstrações de características e comportamentos em comum entre objetos do mundo real. Os diagramas devem demonstrar tantas classes quanto necessárias para o entendimento completo do sistema. Caso não seja possível a exposição de classes implementáveis, as camadas (pacotes) não desenvolvidas no projeto, porém planejadas, podem aparecer como metaclasses.
+
+A figura \ref{fig:cls} demonstra um diagrama de classes. Depois de exibido o diagrama, se seguirão tópicos para descrever formalmente o objetivo de cada classe com seus atributos e métodos (e os parâmetros de cada método).
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=.5\linewidth]{cls}
+	\caption{Exemplo de diagrama de classes}
+	\label{fig:cls}
+\end{figure}
+
+\clearpage
+\subsection{NomeClasse}
+\label{cls:NomeClasse}
+
+\begin{tabular}{p{.25\linewidth}p{.7\linewidth}}
+	\textbf{Objetivo:} & Descreva o objetivo da classe. \\
+	\textbf{Generalização de:} & \hyperref[cls:ClasseHeranca]{ClasseHeranca}.
+\end{tabular}
+
+\begin{table}[h]
+	\tiny
+	\setlength\extrarowheight{5pt}
+	\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.1\textwidth}p{.04\textwidth}p{.03\textwidth}p{.04\textwidth}p{.25\textwidth}}
+		\hline
+		\multicolumn{7}{c}{\textbf{Atributos}} \\
+		\hline
+		\centering \textbf{Nome} & \centering \textbf{Tipo} & \centering \textbf{Padrão} & \textbf{Tam.} & \textbf{Vis.} & \textbf{Req.} & \multicolumn{1}{c}{\textbf{Descrição}} \\ \hline
+		atributoPrivado & tipo & - & 5 & pri & não & Descreva o objetivo do atributo \\
+		atributoPublico & tipo & ``ola'' & 1 & pub & sim & Descreva o objetivo do atributo \\ 
+		atributoProtegido & tipo & 999 & 10 & pro & sim & Descreva o objetivo do atributo \\ \hline
+		
+		\multicolumn{7}{c}{\textbf{Métodos}} \\ \hline
+		\multirow{5}{*}{metodoQualquer} & \multicolumn{6}{l}{Descreva o objetivo do método} \\ \cline{2-7}
+		& \multicolumn{6}{c}{\textbf{Parâmetros}} \\ \cline{2-7}
+		& param & tipo & \multicolumn{2}{l}{padrão} & pub & Objetivo do parâmetro \\ \cline{2-7}
+		& \multicolumn{6}{c}{\textbf{Retorno}} \\ \cline{2-7}
+		& tipo &  \multicolumn{5}{l}{Objetivo do retorno} \\ \hline
+		
+		metodoAbstrato & \multicolumn{6}{l}{Descreva o objetivo do método} \\ \hline
+	\end{tabular} 
+\end{table}	
+
+\clearpage
+\subsection{ClasseHeranca}
+\label{cls:ClasseHeranca}
+
+\begin{tabular}{p{.25\linewidth}p{.7\linewidth}}
+	\textbf{Objetivo:} & Descreva o objetivo da classe. \\
+	\textbf{Especialização de:} & \hyperref[cls:NomeClasse]{NomeClasse}.
+\end{tabular}
+
+\begin{table}[h]
+	\tiny
+	\setlength\extrarowheight{5pt}
+	\begin{tabular}{p{.2\textwidth}p{.15\textwidth}p{.04\textwidth}p{.03\textwidth}p{.1\textwidth}p{.04\textwidth}p{.25\textwidth}}
+		\hline
+		\multicolumn{7}{c}{\textbf{Atributos}} \\
+		\hline
+		\centering \textbf{Nome} & \centering \textbf{Tipo} & \textbf{Tam.} & \textbf{Vis.} & \centering \textbf{Padrão} & \textbf{Req.} & \multicolumn{1}{c}{\textbf{Descrição}} \\ \hline
+		atributoEspecializado & tipo & 5 & pri & - & não & Descreva o objetivo do atributo \\ \hline
+		
+		\multicolumn{7}{c}{\textbf{Métodos}} \\ \hline
+		\multirow{3}{*}{operacaoEspecializada} & \multicolumn{6}{l}{Descreva o objetivo do método} \\ \cline{2-7}
+		& \multicolumn{6}{c}{\textbf{Retorno}} \\ \cline{2-7}
+		& tipo &  \multicolumn{5}{l}{Objetivo do retorno} \\ \hline
+	\end{tabular} 
+\end{table}	
+
+\clearpage
 
 \section{Atividades}
 
 \section{Sequências}
+
+\section{Instalação}
 
 \chapter{Resultados esperados}
 
